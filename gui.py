@@ -111,13 +111,6 @@ load_data()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.title("Crypto Trades Simulator")
 
-# Create a frame for the button and add the button
-button_frame = tk.Frame(root)
-button_frame.pack(fill=tk.X, padx=10, pady=10)
-
-fetch_button = tk.Button(button_frame, text="Fetch Prices", command=update_prices)
-fetch_button.pack(pady=10)
-
 # Create a frame for the balance label
 balance_frame = tk.Frame(root)
 balance_frame.pack(fill=tk.X, padx=10, pady=(10, 0))
