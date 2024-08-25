@@ -22,6 +22,9 @@ purchases = {
     'sundog': 0.0
 }
 
+# Store the latest prices globally
+latest_prices = {}
+
 def save_data():
     data = {
         "balance": balance,
@@ -48,41 +51,39 @@ def on_closing():
     root.destroy()
 
 def fetch_crypto_prices():
+    global latest_prices
     try:
         response = requests.get(url, params=params)
         response.raise_for_status()
         data = response.json()
         print("API Response:", data)  # Log the API response to the console
-        return data
+        latest_prices = data  # Update global latest prices
     except requests.RequestException as e:
         print("Request Error:", e)  # Log any request errors to the console
-        return str(e)
+    
+    # Schedule the next update after 60 seconds (60000 milliseconds)
+    root.after(60000, fetch_crypto_prices)
 
 def update_prices():
-    prices = fetch_crypto_prices()
-    if isinstance(prices, dict):
-        for item in tree.get_children():
-            tree.delete(item)  # Clear the existing table rows
-        for crypto, info in prices.items():
-            price = info['brl']
-            quantity = round(purchases.get(crypto, 0.0), 8)  # Round quantity to 8 decimal places
-            value_in_brl = round(quantity * price, 2)  # Calculate value in BRL and round to 2 decimal places
-            tree.insert("", tk.END, values=(crypto.capitalize(), price, quantity, value_in_brl))
-        readjust_columns()
-    else:
-        for item in tree.get_children():
-            tree.delete(item)
-        tree.insert("", tk.END, values=("Error", prices))
+    for item in tree.get_children():
+        tree.delete(item)  # Clear the existing table rows
+    for crypto, info in latest_prices.items():
+        price = info['brl']
+        quantity = round(purchases.get(crypto, 0.0), 8)  # Round quantity to 8 decimal places
+        value_in_brl = round(quantity * price, 2)  # Calculate value in BRL and round to 2 decimal places
+        tree.insert("", tk.END, values=(crypto.capitalize(), price, quantity, value_in_brl))
+    readjust_columns()
 
     # Update the balance label
     balance_label.config(text=f"Balance: {balance:.2f} BRL")
 
-    # Schedule the next update after 60 seconds (60000 milliseconds)
-    root.after(60000, update_prices)
+    # Update buttons after prices update
+    add_buy_sell_buttons()
 
-def buy_crypto(crypto, price):
+def buy_crypto(crypto):
     global balance
     try:
+        price = latest_prices[crypto]['brl']
         amount_str = amount_entry.get().strip()  # Get and strip whitespace from the amount entry
         if not amount_str:
             raise ValueError("Amount cannot be empty.")
@@ -100,10 +101,51 @@ def buy_crypto(crypto, price):
     except ValueError as e:
         print(f"Error: {e}")
 
+def sell_crypto(crypto):
+    global balance
+    try:
+        price = latest_prices[crypto]['brl']
+        amount_str = amount_entry.get().strip()  # Get and strip whitespace from the amount entry
+        if not amount_str:
+            raise ValueError("Amount cannot be empty.")
+        amount_brl = float(amount_str)  # Convert to float
+        if amount_brl <= 0:
+            raise ValueError("Amount must be positive.")
+        quantity_to_sell = amount_brl / price  # Calculate the quantity of cryptocurrency to sell
+        if purchases[crypto] >= quantity_to_sell:
+            purchases[crypto] = round(purchases.get(crypto, 0.0) - quantity_to_sell, 8)  # Update and round the quantity
+            balance += amount_brl  # Add the amount in BRL back to the balance
+            update_prices()  # Update the table with new quantities
+            print(f"Sold {quantity_to_sell:.8f} of {crypto} for {amount_brl:.2f} BRL.")
+        else:
+            print("Insufficient cryptocurrency quantity to sell.")
+    except ValueError as e:
+        print(f"Error: {e}")
+
 def readjust_columns():
     for col in columns:
         tree.column(col, anchor=tk.CENTER, stretch=True)  # Align the text in the center
     tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+def add_buy_sell_buttons():
+    # Remove previous buttons
+    for widget in controls_frame.winfo_children():
+        if isinstance(widget, tk.Button):
+            widget.grid_forget()  # Use grid_forget() instead of destroy() for layout adjustments
+
+    # Create a button grid dynamically
+    row = 1  # Start below the input field
+    for item in tree.get_children():
+        values = tree.item(item, 'values')
+        crypto = values[0].lower()  # Use cryptocurrency name
+        
+        buy_button = tk.Button(controls_frame, text=f"Buy {crypto.capitalize()}", command=lambda c=crypto: buy_crypto(c))
+        buy_button.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W+tk.E)
+        
+        sell_button = tk.Button(controls_frame, text=f"Sell {crypto.capitalize()}", command=lambda c=crypto: sell_crypto(c))
+        sell_button.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W+tk.E)
+
+        row += 1
 
 # Create the main window
 root = tk.Tk()
@@ -141,37 +183,26 @@ for crypto in purchases.keys():
 
 tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-# Create a frame for the entry and buttons
+# Create a frame for the input and buttons
 controls_frame = tk.Frame(root)
 controls_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
 
-# Create an entry for the amount to buy
+# Create an entry for the amount to buy/sell
 amount_label = tk.Label(controls_frame, text="Amount in BRL:")
-amount_label.pack(side=tk.LEFT)
+amount_label.grid(row=0, column=0, padx=(0, 10), sticky=tk.W)
 
 amount_entry = tk.Entry(controls_frame)
-amount_entry.pack(side=tk.LEFT, padx=(0, 10))
+amount_entry.grid(row=0, column=1, padx=(0, 10), sticky=tk.W+tk.E)
 
-# Function to add buy buttons
-def add_buy_buttons():
-    # Remove previous buy buttons
-    for widget in controls_frame.winfo_children():
-        if isinstance(widget, tk.Button):
-            widget.destroy()
+# Add buy and sell buttons
+add_buy_sell_buttons()
 
-    for item in tree.get_children():
-        values = tree.item(item, 'values')
-        crypto = values[0].lower()  # Use cryptocurrency name
-        price = float(values[1])  # Convert price to float
-        buy_button = tk.Button(controls_frame, text=f"Buy {crypto.capitalize()}", command=lambda c=crypto, p=price: buy_crypto(c, p))
-        buy_button.pack(side=tk.LEFT, padx=5, pady=5)
-
-# Bind the update_prices call to initial run and button creation
-update_prices()
-add_buy_buttons()
+# Fetch initial prices and start updating prices
+fetch_crypto_prices()  # Fetch prices initially
+update_prices()  # Start updating prices every minute
 
 # Set a minimum size for the window to ensure everything fits
-root.geometry("800x400")  # Adjust as needed
+root.geometry("900x600")  # Increased size to fit buttons
 
 # Run the application
 root.mainloop()
