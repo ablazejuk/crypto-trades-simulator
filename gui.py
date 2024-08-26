@@ -147,6 +147,14 @@ def add_buy_sell_buttons():
 
         row += 1
 
+def copy_value_to_clipboard(event):
+    selected_item = tree.selection()[0]  # Get the selected item
+    values = tree.item(selected_item, 'values')
+    value_in_brl = values[3]  # Get the "Value in BRL" column value
+    root.clipboard_clear()
+    root.clipboard_append(value_in_brl)
+    print(f"Copied to clipboard: {value_in_brl}")
+
 # Create the main window
 root = tk.Tk()
 load_data()
@@ -182,6 +190,9 @@ for crypto in purchases.keys():
     tree.insert("", tk.END, values=(crypto.capitalize(), 0, 0, 0))
 
 tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+# Bind double-click event to copy value to clipboard
+tree.bind("<Double-1>", copy_value_to_clipboard)
 
 # Create a frame for the input and buttons
 controls_frame = tk.Frame(root)
