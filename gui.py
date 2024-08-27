@@ -1,4 +1,4 @@
-from tkinter import Frame, Label, Entry, ttk
+from tkinter import Frame, Label, Entry, ttk, Menu
 
 class CryptoGUI:
     def __init__(self, root, balance, purchases):
@@ -9,6 +9,13 @@ class CryptoGUI:
 
         # Initialize GUI components
         self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
+
+        # Create a context menu for right-click
+        self.context_menu = Menu(self.tree, tearoff=0)
+        self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
+
+        # Bind right-click to the treeview
+        self.tree.bind("<Button-3>", self.show_context_menu)
 
     def create_main_window(self):
         # Create a frame for the balance label
@@ -128,3 +135,24 @@ class CryptoGUI:
             self.update_gui()
         else:
             print("Insufficient cryptocurrency to sell.")
+
+    def show_context_menu(self, event):
+        # Get the selected item
+        row_id = self.tree.identify_row(event.y)
+        column_id = self.tree.identify_column(event.x)
+
+        if row_id and column_id:
+            self.tree.selection_set(row_id)
+            self.tree.focus(row_id)
+            self.selected_row = row_id
+            self.selected_column = column_id
+            self.context_menu.post(event.x_root, event.y_root)
+
+    def copy_to_clipboard(self):
+        # Get the value of the selected cell
+        value = self.tree.item(self.selected_row, 'values')[int(self.selected_column[1]) - 1]
+        
+        # Copy to clipboard
+        self.root.clipboard_clear()
+        self.root.clipboard_append(value)
+        self.root.update()  # Keeps the clipboard content even after the app is closed
