@@ -75,7 +75,7 @@ class GUI:
             price = info['brl']
             quantity = round(self.purchases.get(crypto, 0.0), 8)
             value_in_brl = round(quantity * price, 2)
-            self.tree.insert("", "end", values=(crypto.capitalize(), price, quantity, value_in_brl))
+            self.tree.insert("", "end", values=(crypto.capitalize(), price, f"{quantity:.8f}", value_in_brl))
 
         self.add_buy_sell_buttons()
 
