@@ -1,4 +1,4 @@
-from tkinter import Frame, Label, Entry, ttk, Menu
+from tkinter import Frame, Label, Entry, ttk, Menu, Button
 
 class GUI:
     def __init__(self, root, balance, purchases):
@@ -19,7 +19,10 @@ class GUI:
         balance_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         balance_label = Label(balance_frame, text=f"Balance: {self.balance:.2f} BRL")
-        balance_label.pack()
+        balance_label.grid(row=0, column=0, padx=(0, 10), sticky="w")
+
+        reset_button = Button(balance_frame, text="Reset", command=self.reset_data)
+        reset_button.grid(row=0, column=1, sticky="e")
 
         table_frame = Frame(self.root)
         table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
@@ -51,6 +54,16 @@ class GUI:
         amount_entry.grid(row=0, column=1, padx=(0, 10), sticky="w"+"e")
 
         return tree, balance_label, controls_frame, amount_entry
+
+    def reset_data(self):
+        self.balance = 100.0
+        self.purchases = {
+            "bitcoin": 0.0,
+            "ethereum": 0.0,
+            "solana": 0.0,
+            "sundog": 0.0
+        }
+        self.update_gui()
 
     def update_gui(self):
         self.balance_label.config(text=f"Balance: {self.balance:.2f} BRL")
@@ -96,7 +109,8 @@ class GUI:
 
         if self.balance >= amount:
             self.balance -= amount
-            self.purchases[crypto] = self.purchases.get(crypto, 0) + quantity
+            quantity = round(quantity, 8)
+            self.purchases[crypto] = round(self.purchases.get(crypto, 0) + quantity, 8)
             print(f"Bought {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
             self.update_gui()
         else:
