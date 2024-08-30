@@ -1,4 +1,3 @@
-import tkinter as tk
 import requests
 import json
 import os
@@ -7,7 +6,7 @@ data_file = "crypto_data.json"
 url = 'https://api.coingecko.com/api/v3/simple/price'
 params = {'ids': 'bitcoin,ethereum,solana,sundog', 'vs_currencies': 'brl'}
 
-class CryptoUtils:
+class Utils:
     def __init__(self, gui):
         self.gui = gui
 
@@ -40,7 +39,6 @@ class CryptoUtils:
 
         self.update_prices()
         
-        # Schedule the next update after 60 seconds
         self.gui.root.after(60000, self.fetch_crypto_prices)
 
     def update_prices(self):
