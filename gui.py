@@ -53,6 +53,15 @@ class GUI:
         amount_entry = Entry(controls_frame)
         amount_entry.grid(row=0, column=1, padx=(0, 10), sticky="w" + "e")
 
+        self.crypto_combobox = ttk.Combobox(controls_frame, state="readonly")
+        self.crypto_combobox.grid(row=0, column=2, padx=5, pady=5, sticky="w" + "e")
+
+        buy_button = ttk.Button(controls_frame, text="Buy", command=self.buy_selected_crypto)
+        buy_button.grid(row=0, column=3, padx=5, pady=5, sticky="w" + "e")
+
+        sell_button = ttk.Button(controls_frame, text="Sell", command=self.sell_selected_crypto)
+        sell_button.grid(row=0, column=4, padx=5, pady=5, sticky="w" + "e")
+
         return tree, balance_label, controls_frame, amount_entry
 
     def reset_data(self):
@@ -77,24 +86,13 @@ class GUI:
             value_in_brl = round(quantity * price, 2)
             self.tree.insert("", "end", values=(crypto.capitalize(), price, f"{quantity:.8f}", value_in_brl))
 
-        self.add_buy_sell_buttons()
-
-    def add_buy_sell_buttons(self):
-        for widget in self.controls_frame.winfo_children():
-            if isinstance(widget, ttk.Button) or isinstance(widget, ttk.Combobox):
-                widget.grid_forget()
-
+        self.update_combobox()
+        
+    def update_combobox(self):
         coins = [self.tree.item(item, 'values')[0].capitalize() for item in self.tree.get_children()]
-
-        self.crypto_combobox = ttk.Combobox(self.controls_frame, values=coins, state="readonly")
-        self.crypto_combobox.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="w" + "e")
-        self.crypto_combobox.current(0)
-
-        buy_button = ttk.Button(self.controls_frame, text="Buy", command=self.buy_selected_crypto)
-        buy_button.grid(row=2, column=0, padx=5, pady=5, sticky="w" + "e")
-
-        sell_button = ttk.Button(self.controls_frame, text="Sell", command=self.sell_selected_crypto)
-        sell_button.grid(row=2, column=1, padx=5, pady=5, sticky="w" + "e")
+        self.crypto_combobox['values'] = coins
+        if coins:
+            self.crypto_combobox.current(0)
 
     def buy_selected_crypto(self):
         selected_crypto = self.crypto_combobox.get().lower()
