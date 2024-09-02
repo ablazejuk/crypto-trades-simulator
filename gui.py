@@ -129,7 +129,7 @@ class GUI:
             return
 
         price = self.latest_prices[crypto]['brl']
-        quantity = amount / price
+        quantity = round(amount / price, 8)
 
         if self.purchases.get(crypto, 0) >= quantity:
             self.purchases[crypto] -= quantity
