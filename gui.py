@@ -136,7 +136,7 @@ class GUI:
         quantity = round(amount / price, 8)
 
         if self.purchases.get(crypto, 0) >= quantity:
-            self.purchases[crypto] -= quantity
+            self.purchases[crypto] = round(self.purchases[crypto] - quantity, 8)
             self.balance += amount
             print(f"Sold {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
             self.update_gui()
