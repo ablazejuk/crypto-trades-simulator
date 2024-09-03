@@ -4,6 +4,7 @@ from utils import Utils
 
 def main():
     root = Tk()
+    root.title("Crypto Trades Simulator")
 
     gui = GUI(root, balance=100.0, purchases={})
     utils = Utils(gui)
