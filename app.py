@@ -1,22 +1,24 @@
 from tkinter import Tk
 from gui import GUI
 from utils import Utils
+import dependencies
+import inject
+from balance_manager import BalanceManager
 
-def main():
-    root = Tk()
-    root.title("Crypto Trades Simulator")
+class App:
+    def __init__(self):
+        self.root = Tk()
+        self.gui = GUI(inject.instance(BalanceManager), self.root, purchases={})
+        self.utils = Utils(self.gui)
 
-    gui = GUI(root, balance=100.0, purchases={})
-    utils = Utils(gui)
-
-    utils.load_data()
-
-    root.protocol("WM_DELETE_WINDOW", utils.on_closing)
-
-    utils.fetch_crypto_prices()
-
-    root.geometry("900x600")
-    root.mainloop()
+    def main(self):
+        self.root.title("Crypto Trades Simulator")
+        self.utils.load_data()
+        self.root.protocol("WM_DELETE_WINDOW", self.utils.on_closing)
+        self.utils.fetch_crypto_prices()
+        self.root.geometry("900x600")
+        self.root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    app = App()
+    app.main()

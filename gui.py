@@ -1,11 +1,14 @@
 from tkinter import Frame, Label, Entry, ttk, Menu, Button
+import inject
+from balance_manager import BalanceManager
 
 class GUI:
     AVAILABLE_COINS = ["bitcoin", "ethereum", "solana", "sundog"]
 
-    def __init__(self, root, balance, purchases):
+    @inject.autoparams()
+    def __init__(self, balance_manager: BalanceManager, root, purchases):
+        self.balance_manager = balance_manager
         self.root = root
-        self.balance = balance
         self.purchases = purchases
         self.latest_prices = {}
 
@@ -20,7 +23,7 @@ class GUI:
         balance_frame = Frame(self.root)
         balance_frame.pack(fill="x", padx=10, pady=(10, 0))
 
-        balance_label = Label(balance_frame, text=f"Balance: {self.balance:.2f} BRL")
+        balance_label = Label(balance_frame, text=f"Balance: {self.balance_manager.get_balance():.2f} BRL")
         balance_label.grid(row=0, column=0, padx=(0, 10), sticky="w")
 
         reset_button = Button(balance_frame, text="Reset", command=self.reset_data)
@@ -40,8 +43,6 @@ class GUI:
         tree.column("Price (BRL)", anchor="e", stretch=True)
         tree.column("Quantity Bought", anchor="e", stretch=True)
         tree.column("Value in BRL", anchor="e", stretch=True)
-
-        
 
         tree.pack(side="left", fill="both", expand=True)
 
@@ -77,17 +78,12 @@ class GUI:
         return tree, balance_label, controls_frame, amount_entry
 
     def reset_data(self):
-        self.balance = 100.0
-        self.purchases = {
-            "bitcoin": 0.0,
-            "ethereum": 0.0,
-            "solana": 0.0,
-            "sundog": 0.0
-        }
+        self.balance_manager.reset_balance()
+        self.purchases = {coin: 0.0 for coin in self.AVAILABLE_COINS}
         self.update_gui()
 
     def update_gui(self):
-        self.balance_label.config(text=f"Balance: {self.balance:.2f} BRL")
+        self.balance_label.config(text=f"Balance: {self.balance_manager.get_balance():.2f} BRL")
 
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -114,16 +110,12 @@ class GUI:
             return
 
         price = self.latest_prices[crypto]['brl']
-        quantity = amount / price
+        quantity = round(amount / price, 8)
 
-        if self.balance >= amount:
-            self.balance -= amount
-            quantity = round(quantity, 8)
-            self.purchases[crypto] = round(self.purchases.get(crypto, 0) + quantity, 8)
-            print(f"Bought {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
-            self.update_gui()
-        else:
-            print("Insufficient balance.")
+        self.balance_manager.deduct_funds(amount)
+        self.purchases[crypto] = round(self.purchases.get(crypto, 0) + quantity, 8)
+        print(f"Bought {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
+        self.update_gui()
 
     def sell_crypto(self, crypto):
         try:
@@ -137,7 +129,7 @@ class GUI:
 
         if self.purchases.get(crypto, 0) >= quantity:
             self.purchases[crypto] = round(self.purchases[crypto] - quantity, 8)
-            self.balance += amount
+            self.balance_manager.add_funds(amount)
             print(f"Sold {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
             self.update_gui()
         else:
