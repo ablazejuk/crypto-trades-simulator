@@ -1,25 +1,37 @@
-from tkinter import Frame, Label, Entry, ttk, Menu, Button
+from tkinter import Frame, Label, Entry, Tk, ttk, Menu, Button
 from coin_manager import CoinManager
 import inject
 from balance_manager import BalanceManager
 from purchase_manager import PurchaseManager
 
 class GUI:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.__initialized = False
+        return cls._instance
+
     @inject.autoparams()
-    def __init__(self, balance_manager: BalanceManager, purchase_manager: PurchaseManager, coin_manager: CoinManager, root):
-        self.balance_manager = balance_manager
-        self.purchase_manager = purchase_manager
-        self.coin_manager = coin_manager
-        self.root = root
+    def __init__(self, balance_manager: BalanceManager, purchase_manager: PurchaseManager, coin_manager: CoinManager):
+        if not self.__initialized:
+            self.balance_manager = balance_manager
+            self.purchase_manager = purchase_manager
+            self.coin_manager = coin_manager
+            self.root = Tk()
 
-        self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
+            self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
 
-        self.context_menu = Menu(self.tree, tearoff=0)
-        self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
+            self.context_menu = Menu(self.tree, tearoff=0)
+            self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
 
-        self.tree.bind("<Button-3>", self.show_context_menu)
+            self.tree.bind("<Button-3>", self.show_context_menu)
+            self.__initialized = True
 
     def create_main_window(self):
+        self.root.title("Crypto Trades Simulator")
+        self.root.geometry("900x600")
         balance_frame = Frame(self.root)
         balance_frame.pack(fill="x", padx=10, pady=(10, 0))
 

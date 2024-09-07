@@ -1,4 +1,5 @@
 from coin_manager import CoinManager
+from gui import GUI
 import inject
 import requests
 import json
@@ -7,7 +8,7 @@ data_file = "crypto_data.json"
 
 class Utils:
     @inject.autoparams()
-    def __init__(self, coin_manager: CoinManager, gui):
+    def __init__(self, coin_manager: CoinManager, gui: GUI):
         self.coin_manager = coin_manager
         self.gui = gui
 
