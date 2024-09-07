@@ -4,8 +4,6 @@ import requests
 import json
 
 data_file = "crypto_data.json"
-url = 'https://api.coingecko.com/api/v3/simple/price'
-params = {'ids': 'bitcoin,ethereum,solana,sundog', 'vs_currencies': 'brl'}
 
 class Utils:
     @inject.autoparams()
@@ -21,7 +19,12 @@ class Utils:
 
     def fetch_crypto_prices(self):
         try:
-            response = requests.get(url, params=params)
+            url = 'https://api.coingecko.com/api/v3/simple/price'
+            params = {
+                'ids': ',' . join(self.coin_manager.get_available_coins()),
+                'vs_currencies': 'brl'
+            }
+            response = requests.get(url, params)
             response.raise_for_status()
             data = response.json()
             print("API Response:", data)
