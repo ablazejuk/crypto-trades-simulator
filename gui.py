@@ -1,16 +1,16 @@
 from tkinter import Frame, Label, Entry, ttk, Menu, Button
+from coin_manager import CoinManager
 import inject
 from balance_manager import BalanceManager
+from purchase_manager import PurchaseManager
 
 class GUI:
-    AVAILABLE_COINS = ["bitcoin", "ethereum", "solana", "sundog"]
-
     @inject.autoparams()
-    def __init__(self, balance_manager: BalanceManager, root, purchases):
+    def __init__(self, balance_manager: BalanceManager, purchase_manager: PurchaseManager, coin_manager: CoinManager, root):
         self.balance_manager = balance_manager
+        self.purchase_manager = purchase_manager
+        self.coin_manager = coin_manager
         self.root = root
-        self.purchases = purchases
-        self.latest_prices = {}
 
         self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
 
@@ -59,7 +59,7 @@ class GUI:
         self.crypto_combobox.grid(row=0, column=2, padx=5, pady=5, sticky="w" + "e")
         capitalized_cryptos = []
 
-        for crypto in self.AVAILABLE_COINS:
+        for crypto in self.coin_manager.get_available_coins():
             capitalized_crypto = crypto.capitalize()
             tree.insert("", "end", values=(capitalized_crypto, 0, 0, 0))
             capitalized_cryptos.append(capitalized_crypto)
@@ -79,7 +79,7 @@ class GUI:
 
     def reset_data(self):
         self.balance_manager.reset_balance()
-        self.purchases = {coin: 0.0 for coin in self.AVAILABLE_COINS}
+        self.purchase_manager.reset_purchases()
         self.update_gui()
 
     def update_gui(self):
@@ -88,52 +88,23 @@ class GUI:
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-        for crypto, info in self.latest_prices.items():
+        for crypto, info in self.coin_manager.get_latest_prices().items():
             price = info['brl']
-            quantity = round(self.purchases.get(crypto, 0.0), 8)
+            quantity = round(self.purchase_manager.get_purchases().get(crypto, 0.0), 8)
             value_in_brl = round(quantity * price, 2)
             self.tree.insert("", "end", values=(crypto.capitalize(), f"{price:.2f}", f"{quantity:.8f}", f"{value_in_brl:.2f}"))
         
     def buy_selected_crypto(self):
         selected_crypto = self.crypto_combobox.get().lower()
-        self.buy_crypto(selected_crypto)
+        amount = float(self.amount_entry.get())
+        self.purchase_manager.buy_crypto(selected_crypto, amount)
+        self.update_gui()
 
     def sell_selected_crypto(self):
         selected_crypto = self.crypto_combobox.get().lower()
-        self.sell_crypto(selected_crypto)
-
-    def buy_crypto(self, crypto):
-        try:
-            amount = float(self.amount_entry.get())
-        except ValueError:
-            print("Invalid amount entered.")
-            return
-
-        price = self.latest_prices[crypto]['brl']
-        quantity = round(amount / price, 8)
-
-        self.balance_manager.deduct_funds(amount)
-        self.purchases[crypto] = round(self.purchases.get(crypto, 0) + quantity, 8)
-        print(f"Bought {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
+        amount = float(self.amount_entry.get())
+        self.purchase_manager.sell_crypto(selected_crypto, amount)
         self.update_gui()
-
-    def sell_crypto(self, crypto):
-        try:
-            amount = float(self.amount_entry.get())
-        except ValueError:
-            print("Invalid amount entered.")
-            return
-
-        price = self.latest_prices[crypto]['brl']
-        quantity = round(amount / price, 8)
-
-        if self.purchases.get(crypto, 0) >= quantity:
-            self.purchases[crypto] = round(self.purchases[crypto] - quantity, 8)
-            self.balance_manager.add_funds(amount)
-            print(f"Sold {quantity:.8f} {crypto.capitalize()} for {amount:.2f} BRL.")
-            self.update_gui()
-        else:
-            print("Insufficient cryptocurrency to sell.")
 
     def show_context_menu(self, event):
         row_id = self.tree.identify_row(event.y)

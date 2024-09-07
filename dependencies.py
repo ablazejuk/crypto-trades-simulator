@@ -1,7 +1,11 @@
-import inject
 from balance_manager import BalanceManager
+from coin_manager import CoinManager
+from purchase_manager import PurchaseManager
 
 def configure_injections(binder):
-    binder.bind(BalanceManager, BalanceManager())
+    balance_manager_instance = BalanceManager()
+    binder.bind(BalanceManager, balance_manager_instance)
 
-inject.configure(configure_injections)
+    coin_manager_instance = CoinManager()
+    binder.bind(CoinManager, coin_manager_instance)
+    binder.bind(PurchaseManager, PurchaseManager(balance_manager_instance, coin_manager_instance))

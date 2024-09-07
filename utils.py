@@ -1,29 +1,23 @@
+from coin_manager import CoinManager
+import inject
 import requests
 import json
-import os
 
 data_file = "crypto_data.json"
 url = 'https://api.coingecko.com/api/v3/simple/price'
 params = {'ids': 'bitcoin,ethereum,solana,sundog', 'vs_currencies': 'brl'}
 
 class Utils:
-    def __init__(self, gui):
+    @inject.autoparams()
+    def __init__(self, coin_manager: CoinManager, gui):
+        self.coin_manager = coin_manager
         self.gui = gui
 
     def save_data(self):
-        data = {"balance": self.gui.balance_manager.get_balance(), "purchases": self.gui.purchases}
+        data = {"balance": self.gui.balance_manager.get_balance(), "purchases": self.gui.purchase_manager.get_purchases()}
         with open(data_file, "w") as f:
             json.dump(data, f)
         print("Data saved.")
-
-    def load_data(self):
-        if os.path.exists(data_file):
-            with open(data_file, "r") as f:
-                data = json.load(f)
-                self.gui.purchases = data.get("purchases", {})
-                print("Data loaded.")
-        else:
-            self.gui.purchases = {'bitcoin': 0.0, 'ethereum': 0.0, 'solana': 0.0, 'sundog': 0.0}
 
     def fetch_crypto_prices(self):
         try:
@@ -31,16 +25,12 @@ class Utils:
             response.raise_for_status()
             data = response.json()
             print("API Response:", data)
-            self.gui.latest_prices.update(data)
+            self.coin_manager.set_latest_prices(data)
         except requests.RequestException as e:
             print("Request Error:", e)
 
-        self.update_prices()
-        
-        self.gui.root.after(60000, self.fetch_crypto_prices)
-
-    def update_prices(self):
         self.gui.update_gui()
+        self.gui.root.after(60000, self.fetch_crypto_prices)
 
     def on_closing(self):
         self.save_data()
