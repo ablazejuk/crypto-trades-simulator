@@ -7,7 +7,7 @@ from purchase_manager import PurchaseManager
 class GUI:
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.__initialized = False
@@ -28,6 +28,16 @@ class GUI:
 
             self.tree.bind("<Button-3>", self.show_context_menu)
             self.__initialized = True
+
+    def run(self):
+        self.root.mainloop()
+
+    def on_close(self, callback):
+        def wrapper():
+            callback()
+            self.root.destroy()
+
+        self.root.protocol("WM_DELETE_WINDOW", wrapper)
 
     def create_main_window(self):
         self.root.title("Crypto Trades Simulator")

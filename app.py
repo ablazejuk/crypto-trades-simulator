@@ -1,19 +1,28 @@
-from coin_manager import CoinManager
 from dependencies import configure_injections
 from gui import GUI
 from utils import Utils
 import inject
 
 class App:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.__initialized = False
+        return cls._instance
+
     @inject.autoparams()
     def __init__(self, gui: GUI):
-        self.gui = gui
-        self.utils = Utils()
+        if not self.__initialized:
+            self.gui = gui
+            self.utils = Utils()
+            self.__initialized = True
 
     def main(self):
-        self.gui.root.protocol("WM_DELETE_WINDOW", self.utils.on_closing)
         self.utils.fetch_crypto_prices()
-        self.gui.root.mainloop()
+        self.gui.on_close(self.utils.on_closing)
+        self.gui.run()
 
 if __name__ == "__main__":
     inject.configure(configure_injections)

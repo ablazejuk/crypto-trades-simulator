@@ -38,4 +38,3 @@ class Utils:
 
     def on_closing(self):
         self.save_data()
-        self.gui.root.destroy()
