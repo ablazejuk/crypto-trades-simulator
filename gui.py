@@ -23,11 +23,18 @@ class GUI:
 
             self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
 
+            self.schedule_price_fetch()
+
             self.context_menu = Menu(self.tree, tearoff=0)
             self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
 
             self.tree.bind("<Button-3>", self.show_context_menu)
             self.__initialized = True
+
+    def schedule_price_fetch(self):
+        self.coin_manager.fetch_crypto_prices()
+        self.update_gui()
+        self.root.after(60000, self.schedule_price_fetch)
 
     def run(self):
         self.root.mainloop()

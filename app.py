@@ -20,7 +20,6 @@ class App:
             self.__initialized = True
 
     def main(self):
-        self.utils.fetch_crypto_prices()
         self.gui.on_close(self.utils.on_closing)
         self.gui.run()
 
