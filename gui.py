@@ -1,5 +1,6 @@
 from tkinter import Frame, Label, Entry, Tk, ttk, Menu, Button
 from coin_manager import CoinManager
+from data_manager import DataManager
 import inject
 from balance_manager import BalanceManager
 from purchase_manager import PurchaseManager
@@ -14,11 +15,18 @@ class GUI:
         return cls._instance
 
     @inject.autoparams()
-    def __init__(self, balance_manager: BalanceManager, purchase_manager: PurchaseManager, coin_manager: CoinManager):
+    def __init__(
+        self, 
+        balance_manager: BalanceManager, 
+        purchase_manager: PurchaseManager, 
+        coin_manager: CoinManager,
+        data_manager: DataManager
+    ):
         if not self.__initialized:
             self.balance_manager = balance_manager
             self.purchase_manager = purchase_manager
             self.coin_manager = coin_manager
+            self.data_manager = data_manager
             self.root = Tk()
 
             self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
@@ -29,6 +37,9 @@ class GUI:
             self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
 
             self.tree.bind("<Button-3>", self.show_context_menu)
+
+            self.on_close()
+
             self.__initialized = True
 
     def schedule_price_fetch(self):
@@ -39,9 +50,9 @@ class GUI:
     def run(self):
         self.root.mainloop()
 
-    def on_close(self, callback):
+    def on_close(self):
         def wrapper():
-            callback()
+            self.data_manager.save_data()
             self.root.destroy()
 
         self.root.protocol("WM_DELETE_WINDOW", wrapper)

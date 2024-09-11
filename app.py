@@ -1,6 +1,5 @@
 from dependencies import configure_injections
 from gui import GUI
-from utils import Utils
 import inject
 
 class App:
@@ -16,11 +15,9 @@ class App:
     def __init__(self, gui: GUI):
         if not self.__initialized:
             self.gui = gui
-            self.utils = Utils()
             self.__initialized = True
 
     def main(self):
-        self.gui.on_close(self.utils.on_closing)
         self.gui.run()
 
 if __name__ == "__main__":
