@@ -1,7 +1,5 @@
 import json
-from balance_manager import BalanceManager
-import inject
-from purchase_manager import PurchaseManager
+import os
 
 class DataManager:
     DATA_FILE = "crypto_data.json"
@@ -13,16 +11,25 @@ class DataManager:
             cls._instance.__initialized = False
         return cls._instance
     
-    @inject.autoparams()
-    def __init__(self, balance_manager: BalanceManager, purchase_manager: PurchaseManager):
+    def __init__(self):
         if not self.__initialized:
-            self.balance_manager = balance_manager
-            self.purchase_manager = purchase_manager
+            self.data = self.load_data()
             self.__initialized = True
 
-    def save_data(self):
-        balance = self.balance_manager.get_balance()
-        purchases = self.purchase_manager.get_purchases()
+    def load_data(self):
+        if not os.path.exists(self.DATA_FILE):
+            return None
+        
+        with open(self.DATA_FILE, "r") as file:
+            return json.load(file)
+
+    def get_value(self, key):
+        if self.data and key in self.data:
+            return self.data[key]
+        
+        return None
+
+    def save_data(self, balance, purchases):
         data = {
             "balance": balance,
             "purchases": purchases

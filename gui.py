@@ -52,7 +52,9 @@ class GUI:
 
     def on_close(self):
         def wrapper():
-            self.data_manager.save_data()
+            balance = self.balance_manager.get_balance()
+            purchases = self.purchase_manager.get_purchases()
+            self.data_manager.save_data(balance, purchases)
             self.root.destroy()
 
         self.root.protocol("WM_DELETE_WINDOW", wrapper)

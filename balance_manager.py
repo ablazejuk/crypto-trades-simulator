@@ -1,5 +1,5 @@
-import os
-import json
+from data_manager import DataManager
+import inject
 
 class BalanceManager:
     _instance = None
@@ -11,20 +11,20 @@ class BalanceManager:
             cls._instance.__initialized = False
         return cls._instance
 
-    def __init__(self):
+    @inject.autoparams()
+    def __init__(self, data_manager: DataManager):
         if not self.__initialized:
+            self.data_manager = data_manager
             self.balance = self.load_balance()
             self.__initialized = True
 
     def load_balance(self):
-        data_file = "crypto_data.json"
+        balance = self.data_manager.get_value('balance')
 
-        if not os.path.exists(data_file):
+        if not balance:
             return self.INITIAL_BALANCE
-
-        with open(data_file, "r") as file:
-            data = json.load(file)
-            return data.get('balance', self.INITIAL_BALANCE)
+        
+        return balance
 
     def add_funds(self, amount):
         self.balance += amount

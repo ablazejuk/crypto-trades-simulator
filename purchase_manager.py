@@ -1,7 +1,6 @@
-import os
-import json
 from balance_manager import BalanceManager
 from coin_manager import CoinManager
+from data_manager import DataManager
 import inject
 import copy
 
@@ -15,24 +14,23 @@ class PurchaseManager:
         return cls._instance
 
     @inject.autoparams()
-    def __init__(self, balance_manager: BalanceManager, coin_manager: CoinManager):
+    def __init__(self, balance_manager: BalanceManager, coin_manager: CoinManager, data_manager: DataManager):
         if not self.__initialized:
             self.balance_manager = balance_manager
             self.coin_manager = coin_manager
+            self.data_manager = data_manager
             self.initial_purchases = {coin: 0.0 for coin in coin_manager.get_available_coins()}
             self.latest_prices = {}
             self.purchases = self.load_purchases()
             self.__initialized = True
 
     def load_purchases(self):
-        data_file = "crypto_data.json"
+        purchases = self.data_manager.get_value('purchases')
 
-        if not os.path.exists(data_file):
+        if not purchases:
             return self.initial_purchases
-
-        with open(data_file, "r") as file:
-            data = json.load(file)
-            return data.get('purchases', self.initial_purchases)
+        
+        return purchases
 
     def buy_crypto(self, crypto, amount):
         try:
