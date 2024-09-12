@@ -1,22 +1,14 @@
 from data_manager import DataManager
 import inject
+from singleton_metaclass import SingletonMeta
 
-class BalanceManager:
-    _instance = None
+class BalanceManager(metaclass=SingletonMeta):
     INITIAL_BALANCE = 100.0
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.__initialized = False
-        return cls._instance
 
     @inject.autoparams()
     def __init__(self, data_manager: DataManager):
-        if not self.__initialized:
-            self.data_manager = data_manager
-            self.balance = self.load_balance()
-            self.__initialized = True
+        self.data_manager = data_manager
+        self.balance = self.load_balance()
 
     def load_balance(self):
         balance = self.data_manager.get_value('balance')

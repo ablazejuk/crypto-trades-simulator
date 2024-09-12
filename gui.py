@@ -4,16 +4,10 @@ from data_manager import DataManager
 import inject
 from balance_manager import BalanceManager
 from purchase_manager import PurchaseManager
+from singleton_metaclass import SingletonMeta
 
-class GUI:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.__initialized = False
-        return cls._instance
-
+class GUI(metaclass=SingletonMeta):
+    
     @inject.autoparams()
     def __init__(
         self, 
@@ -22,25 +16,22 @@ class GUI:
         coin_manager: CoinManager,
         data_manager: DataManager
     ):
-        if not self.__initialized:
-            self.balance_manager = balance_manager
-            self.purchase_manager = purchase_manager
-            self.coin_manager = coin_manager
-            self.data_manager = data_manager
-            self.root = Tk()
+        self.balance_manager = balance_manager
+        self.purchase_manager = purchase_manager
+        self.coin_manager = coin_manager
+        self.data_manager = data_manager
+        self.root = Tk()
 
-            self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
+        self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
 
-            self.schedule_price_fetch()
+        self.schedule_price_fetch()
 
-            self.context_menu = Menu(self.tree, tearoff=0)
-            self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
+        self.context_menu = Menu(self.tree, tearoff=0)
+        self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
 
-            self.tree.bind("<Button-3>", self.show_context_menu)
+        self.tree.bind("<Button-3>", self.show_context_menu)
 
-            self.on_close()
-
-            self.__initialized = True
+        self.on_close()
 
     def schedule_price_fetch(self):
         self.coin_manager.fetch_crypto_prices()

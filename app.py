@@ -1,21 +1,12 @@
 from dependencies import configure_injections
 from gui import GUI
 import inject
+from singleton_metaclass import SingletonMeta
 
-class App:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.__initialized = False
-        return cls._instance
-
+class App(metaclass=SingletonMeta):
     @inject.autoparams()
     def __init__(self, gui: GUI):
-        if not self.__initialized:
-            self.gui = gui
-            self.__initialized = True
+        self.gui = gui
 
     def main(self):
         self.gui.run()

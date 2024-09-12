@@ -1,20 +1,12 @@
 import json
 import os
+from singleton_metaclass import SingletonMeta
 
-class DataManager:
+class DataManager(metaclass=SingletonMeta):
     DATA_FILE = "crypto_data.json"
-    _instance = None
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.__initialized = False
-        return cls._instance
-    
     def __init__(self):
-        if not self.__initialized:
-            self.data = self.load_data()
-            self.__initialized = True
+        self.data = self.load_data()
 
     def load_data(self):
         if not os.path.exists(self.DATA_FILE):

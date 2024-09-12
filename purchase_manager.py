@@ -3,26 +3,18 @@ from coin_manager import CoinManager
 from data_manager import DataManager
 import inject
 import copy
+from singleton_metaclass import SingletonMeta
 
-class PurchaseManager:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.__initialized = False
-        return cls._instance
+class PurchaseManager(metaclass=SingletonMeta):
 
     @inject.autoparams()
     def __init__(self, balance_manager: BalanceManager, coin_manager: CoinManager, data_manager: DataManager):
-        if not self.__initialized:
-            self.balance_manager = balance_manager
-            self.coin_manager = coin_manager
-            self.data_manager = data_manager
-            self.initial_purchases = {coin: 0.0 for coin in coin_manager.get_available_coins()}
-            self.latest_prices = {}
-            self.purchases = self.load_purchases()
-            self.__initialized = True
+        self.balance_manager = balance_manager
+        self.coin_manager = coin_manager
+        self.data_manager = data_manager
+        self.initial_purchases = {coin: 0.0 for coin in coin_manager.get_available_coins()}
+        self.latest_prices = {}
+        self.purchases = self.load_purchases()
 
     def load_purchases(self):
         purchases = self.data_manager.get_value('purchases')
