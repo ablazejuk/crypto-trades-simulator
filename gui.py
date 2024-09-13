@@ -8,7 +8,6 @@ from purchase_manager import PurchaseManager
 from singleton_metaclass import SingletonMeta
 
 class GUI(metaclass=SingletonMeta):
-    
     @inject.autoparams()
     def __init__(
         self, 
