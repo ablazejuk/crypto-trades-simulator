@@ -1,5 +1,6 @@
-from tkinter import Frame, Label, Entry, Tk, ttk, Menu, Button
+from tkinter import Frame, Label, Entry, Tk, ttk, Button
 from coin_manager import CoinManager
+from context_menu_manager import ContextMenuManager
 from data_manager import DataManager
 import inject
 from balance_manager import BalanceManager
@@ -14,7 +15,8 @@ class GUI(metaclass=SingletonMeta):
         balance_manager: BalanceManager, 
         purchase_manager: PurchaseManager, 
         coin_manager: CoinManager,
-        data_manager: DataManager
+        data_manager: DataManager,
+        context_menu_manager: ContextMenuManager
     ):
         self.balance_manager = balance_manager
         self.purchase_manager = purchase_manager
@@ -24,12 +26,9 @@ class GUI(metaclass=SingletonMeta):
 
         self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
 
+        context_menu_manager.setup_context_menu(self.root, self.tree)
+
         self.schedule_price_fetch()
-
-        self.context_menu = Menu(self.tree, tearoff=0)
-        self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
-
-        self.tree.bind("<Button-3>", self.show_context_menu)
 
         self.on_close()
 
@@ -144,21 +143,3 @@ class GUI(metaclass=SingletonMeta):
         amount = float(self.amount_entry.get())
         self.purchase_manager.sell_crypto(selected_crypto, amount)
         self.update_gui()
-
-    def show_context_menu(self, event):
-        row_id = self.tree.identify_row(event.y)
-        column_id = self.tree.identify_column(event.x)
-
-        if row_id and column_id:
-            self.tree.selection_set(row_id)
-            self.tree.focus(row_id)
-            self.selected_row = row_id
-            self.selected_column = column_id
-            self.context_menu.post(event.x_root, event.y_root)
-
-    def copy_to_clipboard(self):
-        value = self.tree.item(self.selected_row, 'values')[int(self.selected_column[1]) - 1]
-        
-        self.root.clipboard_clear()
-        self.root.clipboard_append(value)
-        self.root.update()
