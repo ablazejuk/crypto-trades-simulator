@@ -65,17 +65,23 @@ class GUI(metaclass=SingletonMeta):
         table_frame = Frame(self.root)
         table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 
-        columns = ("Cryptocurrency", "Price (BRL)", "Quantity Bought", "Value in BRL")
-        tree = ttk.Treeview(table_frame, columns=columns, show='headings')
-        tree.heading("Cryptocurrency", text="Cryptocurrency")
-        tree.heading("Price (BRL)", text="Price (BRL)")
-        tree.heading("Quantity Bought", text="Quantity Bought")
-        tree.heading("Value in BRL", text="Value in BRL")
+        CRYPTOCURRENCY = "Cryptocurrency"
+        PRICE_BRL = "Price (BRL)"
+        QUANTITY_BOUGHT = "Quantity Bought"
+        VALUE_BRL = "Value in BRL"
 
-        tree.column("Cryptocurrency", anchor="w", stretch=True)
-        tree.column("Price (BRL)", anchor="e", stretch=True)
-        tree.column("Quantity Bought", anchor="e", stretch=True)
-        tree.column("Value in BRL", anchor="e", stretch=True)
+        columns = (CRYPTOCURRENCY, PRICE_BRL, QUANTITY_BOUGHT, VALUE_BRL)
+        tree = ttk.Treeview(table_frame, columns=columns, show='headings')
+
+        tree.heading(CRYPTOCURRENCY, text=CRYPTOCURRENCY)
+        tree.heading(PRICE_BRL, text=PRICE_BRL)
+        tree.heading(QUANTITY_BOUGHT, text=QUANTITY_BOUGHT)
+        tree.heading(VALUE_BRL, text=VALUE_BRL)
+
+        tree.column(CRYPTOCURRENCY, anchor="w", stretch=True)
+        tree.column(PRICE_BRL, anchor="e", stretch=True)
+        tree.column(QUANTITY_BOUGHT, anchor="e", stretch=True)
+        tree.column(VALUE_BRL, anchor="e", stretch=True)
 
         tree.pack(side="left", fill="both", expand=True)
 
