@@ -1,4 +1,5 @@
 from balance_manager import BalanceManager
+from balance_panel import BalancePanel
 from coin_manager import CoinManager
 from context_menu_manager import ContextMenuManager
 from data_manager import DataManager
@@ -15,3 +16,4 @@ def configure_injections(binder):
     binder.bind_to_constructor(DataManager, lambda: DataManager())
     binder.bind_to_constructor(GUI, lambda: GUI())
     binder.bind_to_constructor(PurchaseManager, lambda: PurchaseManager())
+    binder.bind_to_constructor(BalancePanel, lambda: BalancePanel())

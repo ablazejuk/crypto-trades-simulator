@@ -1,4 +1,5 @@
-from tkinter import Frame, Label, Entry, Tk, ttk, Button
+from tkinter import Frame, Label, Entry, Tk, ttk
+from balance_panel import BalancePanel
 from coin_manager import CoinManager
 from context_menu_manager import ContextMenuManager
 from data_manager import DataManager
@@ -15,15 +16,17 @@ class GUI(metaclass=SingletonMeta):
         purchase_manager: PurchaseManager, 
         coin_manager: CoinManager,
         data_manager: DataManager,
-        context_menu_manager: ContextMenuManager
+        context_menu_manager: ContextMenuManager,
+        balance_panel: BalancePanel
     ):
         self.balance_manager = balance_manager
         self.purchase_manager = purchase_manager
         self.coin_manager = coin_manager
         self.data_manager = data_manager
+        self.balance_panel = balance_panel
         self.root = Tk()
 
-        self.tree, self.balance_label, self.controls_frame, self.amount_entry = self.create_main_window()
+        self.tree, self.controls_frame, self.amount_entry = self.create_main_window()
 
         context_menu_manager.setup_context_menu(self.root, self.tree)
 
@@ -51,14 +54,8 @@ class GUI(metaclass=SingletonMeta):
     def create_main_window(self):
         self.root.title("Crypto Trades Simulator")
         self.root.geometry("900x600")
-        balance_frame = Frame(self.root)
-        balance_frame.pack(fill="x", padx=10, pady=(10, 0))
 
-        balance_label = Label(balance_frame, text=f"Balance: {self.balance_manager.get_balance():.2f} BRL")
-        balance_label.grid(row=0, column=0, padx=(0, 10), sticky="w")
-
-        reset_button = Button(balance_frame, text="Reset", command=self.reset_data)
-        reset_button.grid(row=0, column=1, sticky="e")
+        self.balance_panel.create(self.root, self.reset_data)
 
         table_frame = Frame(self.root)
         table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
@@ -112,7 +109,7 @@ class GUI(metaclass=SingletonMeta):
         sell_button = ttk.Button(controls_frame, text="Sell", command=self.sell_selected_crypto)
         sell_button.grid(row=0, column=4, padx=5, pady=5, sticky="w" + "e")
 
-        return tree, balance_label, controls_frame, amount_entry
+        return tree, controls_frame, amount_entry
 
     def reset_data(self):
         self.balance_manager.reset_balance()
@@ -120,7 +117,7 @@ class GUI(metaclass=SingletonMeta):
         self.update_gui()
 
     def update_gui(self):
-        self.balance_label.config(text=f"Balance: {self.balance_manager.get_balance():.2f} BRL")
+        self.balance_panel.update()
 
         for item in self.tree.get_children():
             self.tree.delete(item)
