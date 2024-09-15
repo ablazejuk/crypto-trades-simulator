@@ -7,6 +7,7 @@ import inject
 from balance_manager import BalanceManager
 from purchase_manager import PurchaseManager
 from singleton_metaclass import SingletonMeta
+from table import Table
 
 class GUI(metaclass=SingletonMeta):
     @inject.autoparams()
@@ -17,13 +18,15 @@ class GUI(metaclass=SingletonMeta):
         coin_manager: CoinManager,
         data_manager: DataManager,
         context_menu_manager: ContextMenuManager,
-        balance_panel: BalancePanel
+        balance_panel: BalancePanel,
+        table: Table
     ):
         self.balance_manager = balance_manager
         self.purchase_manager = purchase_manager
         self.coin_manager = coin_manager
         self.data_manager = data_manager
         self.balance_panel = balance_panel
+        self.table = table
         self.root = Tk()
 
         self.tree, self.controls_frame, self.amount_entry = self.create_main_window()
@@ -56,29 +59,7 @@ class GUI(metaclass=SingletonMeta):
         self.root.geometry("900x600")
 
         self.balance_panel.create(self.root, self.reset_data)
-
-        table_frame = Frame(self.root)
-        table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
-
-        CRYPTOCURRENCY = "Cryptocurrency"
-        PRICE_BRL = "Price (BRL)"
-        QUANTITY_BOUGHT = "Quantity Bought"
-        VALUE_BRL = "Value in BRL"
-
-        columns = (CRYPTOCURRENCY, PRICE_BRL, QUANTITY_BOUGHT, VALUE_BRL)
-        tree = ttk.Treeview(table_frame, columns=columns, show='headings')
-
-        tree.heading(CRYPTOCURRENCY, text=CRYPTOCURRENCY)
-        tree.heading(PRICE_BRL, text=PRICE_BRL)
-        tree.heading(QUANTITY_BOUGHT, text=QUANTITY_BOUGHT)
-        tree.heading(VALUE_BRL, text=VALUE_BRL)
-
-        tree.column(CRYPTOCURRENCY, anchor="w", stretch=True)
-        tree.column(PRICE_BRL, anchor="e", stretch=True)
-        tree.column(QUANTITY_BOUGHT, anchor="e", stretch=True)
-        tree.column(VALUE_BRL, anchor="e", stretch=True)
-
-        tree.pack(side="left", fill="both", expand=True)
+        tree = self.table.create(self.root)
 
         controls_frame = Frame(self.root)
         controls_frame.pack(fill="x", padx=10, pady=(0, 10))
@@ -118,15 +99,7 @@ class GUI(metaclass=SingletonMeta):
 
     def update_gui(self):
         self.balance_panel.update()
-
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-
-        for crypto, info in self.coin_manager.get_latest_prices().items():
-            price = info['brl']
-            quantity = round(self.purchase_manager.get_purchases().get(crypto, 0.0), 8)
-            value_in_brl = round(quantity * price, 2)
-            self.tree.insert("", "end", values=(crypto.capitalize(), f"{price:.2f}", f"{quantity:.8f}", f"{value_in_brl:.2f}"))
+        self.table.update()
         
     def buy_selected_crypto(self):
         selected_crypto = self.crypto_combobox.get().lower()
