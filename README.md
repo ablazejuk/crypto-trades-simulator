@@ -16,6 +16,7 @@
 
 - **Python 3.x**: Make sure Python is installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
 - **Tkinter**: Tkinter is included with most Python installations. If it's not installed, you can install it using:
+
 ```bash
   sudo apt-get install python3-tk
 ```
@@ -40,8 +41,9 @@ pip install requests
    Navigate to the project directory and run:
 
    ```bash
-   python gui.py
+   python app.py
    ```
+
 2. **Simulate Trades**:
 
    - **Fetch Prices**: Click the "Fetch Prices" button to get the latest cryptocurrency prices.
@@ -61,8 +63,6 @@ crypto-trades-simulator/
 - `crypto_data.json` # File for persisting balance and purchases
 
 - `README.md`        # Project documentation
-
-
 
 ## Troubleshooting
 
