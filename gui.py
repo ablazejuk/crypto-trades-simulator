@@ -38,7 +38,7 @@ class GUI(metaclass=SingletonMeta):
         self.main_window.update()
         self.root.after(60000, self.schedule_price_fetch)
 
-    def run(self):
+    def run(self) -> None:
         self.root.mainloop()
 
     def on_close(self):
