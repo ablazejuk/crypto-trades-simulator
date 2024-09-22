@@ -34,6 +34,14 @@ cd crypto-trades-simulator
 pip install requests
 ```
 
+## Configuration
+
+### Configure pre-push git hook to check types
+
+```bash
+pre-commit install --hook-type pre-push
+```
+
 ## Usage
 
 1. **Run the Application**:
