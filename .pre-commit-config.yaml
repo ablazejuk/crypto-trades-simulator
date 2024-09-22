@@ -4,4 +4,4 @@ repos:
     hooks:
       - id: mypy
         stages: [push]
-        args: ["--follow-imports", "silent", "--all-files"]
+        args: ["--follow-imports", "silent"]
