@@ -9,7 +9,7 @@ class Table:
         self.coin_manager = coin_manager
         self.purchase_manager = purchase_manager
 
-    def create(self, root):
+    def create(self, root) -> ttk.Treeview:
         table_frame = Frame(root)
         table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 

@@ -18,7 +18,7 @@ class GUI(metaclass=SingletonMeta):
         data_manager: DataManager,
         context_menu_manager: ContextMenuManager,
         main_window: MainWindow
-    ):
+    ) -> None:
         self.balance_manager = balance_manager
         self.purchase_manager = purchase_manager
         self.coin_manager = coin_manager
@@ -33,7 +33,7 @@ class GUI(metaclass=SingletonMeta):
 
         self.on_close()
 
-    def schedule_price_fetch(self):
+    def schedule_price_fetch(self) -> None:
         self.coin_manager.fetch_crypto_prices()
         self.main_window.update()
         self.root.after(60000, self.schedule_price_fetch)
@@ -41,8 +41,8 @@ class GUI(metaclass=SingletonMeta):
     def run(self) -> None:
         self.root.mainloop()
 
-    def on_close(self):
-        def wrapper():
+    def on_close(self) -> None:
+        def wrapper() -> None:
             balance = self.balance_manager.get_balance()
             purchases = self.purchase_manager.get_purchases()
             self.data_manager.save_data(balance, purchases)

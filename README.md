@@ -79,9 +79,14 @@ crypto-trades-simulator/
 
 ## Future Improvements
 
-- **Sell Functionality**: Add a feature to allow selling of cryptocurrencies.
 - **Portfolio Analysis**: Provide more detailed analytics on the user's portfolio.
 - **Support for More Cryptocurrencies**: Extend the list of supported cryptocurrencies.
+
+## Check types
+
+```bash
+   mypy .
+```
 
 ## License
 

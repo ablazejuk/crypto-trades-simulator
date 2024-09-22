@@ -27,7 +27,7 @@ class BalanceManager(metaclass=SingletonMeta):
         else:
             raise ValueError("Insufficient balance")
 
-    def get_balance(self):
+    def get_balance(self) -> float:
         return self.balance
     
     def reset_balance(self):

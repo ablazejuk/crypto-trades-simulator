@@ -12,7 +12,7 @@ class CoinManager(metaclass=SingletonMeta):
     def get_latest_prices(self):
         return self.latest_prices
     
-    def fetch_crypto_prices(self):
+    def fetch_crypto_prices(self) -> None:
         try:
             url = 'https://api.coingecko.com/api/v3/simple/price'
             params = {

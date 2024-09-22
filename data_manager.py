@@ -21,7 +21,7 @@ class DataManager(metaclass=SingletonMeta):
         
         return None
 
-    def save_data(self, balance, purchases):
+    def save_data(self, balance, purchases) -> None:
         data = {
             "balance": balance,
             "purchases": purchases

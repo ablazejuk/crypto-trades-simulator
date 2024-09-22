@@ -2,7 +2,7 @@ from tkinter import Menu
 from singleton_metaclass import SingletonMeta
 
 class ContextMenuManager(metaclass=SingletonMeta):
-    def setup_context_menu(self, root, tree):
+    def setup_context_menu(self, root, tree) -> None:
         self.root = root
         self.tree = tree
         self.context_menu = Menu(self.tree, tearoff=0)

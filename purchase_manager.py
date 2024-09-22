@@ -55,7 +55,7 @@ class PurchaseManager(metaclass=SingletonMeta):
         except ValueError:
             return "Invalid amount entered."
 
-    def get_purchases(self):
+    def get_purchases(self) -> dict[str, float]:
         return self.purchases
 
     def reset_purchases(self):
