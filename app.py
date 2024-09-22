@@ -8,7 +8,7 @@ class App(metaclass=SingletonMeta):
     def __init__(self, gui: GUI):
         self.gui = gui
 
-    def main(self):
+    def main(self) -> None:
         self.gui.run()
 
 if __name__ == "__main__":
