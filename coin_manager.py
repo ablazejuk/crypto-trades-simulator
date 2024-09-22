@@ -2,7 +2,7 @@ import requests
 from singleton_metaclass import SingletonMeta
 
 class CoinManager(metaclass=SingletonMeta):
-    def __init__(self):
+    def __init__(self) -> None:
         self.available_coins = ["bitcoin", "ethereum", "solana", "sundog"]
         self.latest_prices = {}
 

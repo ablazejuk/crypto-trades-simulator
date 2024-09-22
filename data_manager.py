@@ -5,7 +5,7 @@ from singleton_metaclass import SingletonMeta
 class DataManager(metaclass=SingletonMeta):
     DATA_FILE = "crypto_data.json"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.data = self.load_data()
 
     def load_data(self):

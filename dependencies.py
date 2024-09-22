@@ -5,11 +5,12 @@ from context_menu_manager import ContextMenuManager
 from controls_panel import ControlsPanel
 from data_manager import DataManager
 from gui import GUI
+from inject import Binder
 from main_window import MainWindow
 from purchase_manager import PurchaseManager
 from table import Table
 
-def configure_injections(binder):
+def configure_injections(binder: Binder) -> None:
     from app import App
     binder.bind_to_constructor(App, lambda: App())
     
