@@ -30,5 +30,5 @@ class BalanceManager(metaclass=SingletonMeta):
     def get_balance(self) -> float:
         return self.balance
     
-    def reset_balance(self):
+    def reset_balance(self) -> None:
         self.balance = self.INITIAL_BALANCE

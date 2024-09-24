@@ -58,5 +58,5 @@ class PurchaseManager(metaclass=SingletonMeta):
     def get_purchases(self) -> dict[str, float]:
         return self.purchases
 
-    def reset_purchases(self):
+    def reset_purchases(self) -> None:
         self.purchases = copy.deepcopy(self.initial_purchases)

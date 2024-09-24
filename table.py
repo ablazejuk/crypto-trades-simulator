@@ -25,7 +25,7 @@ class Table:
 
         return self.tree
 
-    def update(self):
+    def update(self) -> None:
         for item in self.tree.get_children():
             self.tree.delete(item)
 

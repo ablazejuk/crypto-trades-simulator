@@ -10,7 +10,7 @@ class ControlsPanel(metaclass=SingletonMeta):
         self.purchase_manager = purchase_manager
         self.coin_manager = coin_manager
 
-    def create(self, root, update_callback):
+    def create(self, root, update_callback) -> None:
         self.update_callback = update_callback
 
         controls_frame = Frame(root)

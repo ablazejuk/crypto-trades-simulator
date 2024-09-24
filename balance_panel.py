@@ -8,7 +8,7 @@ class BalancePanel(metaclass=SingletonMeta):
     def __init__(self, balance_manager: BalanceManager):
         self.balance_manager = balance_manager
         
-    def create(self, root, reset_callback):
+    def create(self, root, reset_callback) -> None:
         balance_frame = Frame(root)
         balance_frame.pack(fill="x", padx=10, pady=(10, 0))
 
@@ -18,5 +18,5 @@ class BalancePanel(metaclass=SingletonMeta):
         reset_button = Button(balance_frame, text="Reset", command=reset_callback)
         reset_button.grid(row=0, column=1, sticky="e")
 
-    def update(self):
+    def update(self) -> None:
         self.balance_label.config(text=f"Balance: {self.balance_manager.get_balance():.2f} BRL")

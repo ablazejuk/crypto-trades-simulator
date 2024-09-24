@@ -1,3 +1,4 @@
+from tkinter import Tk
 from tkinter.ttk import Treeview
 from balance_manager import BalanceManager
 from balance_panel import BalancePanel
@@ -23,7 +24,7 @@ class MainWindow(metaclass=SingletonMeta):
         self.balance_manager = balance_manager
         self.purchase_manager = purchase_manager
 
-    def create(self, root) -> Treeview:
+    def create(self, root: Tk) -> Treeview:
         self.root = root
         self.root.title("Crypto Trades Simulator")
         self.root.geometry("900x600")
@@ -38,7 +39,7 @@ class MainWindow(metaclass=SingletonMeta):
         self.balance_panel.update()
         self.table.update()
 
-    def reset_data(self):
+    def reset_data(self) -> None:
         self.balance_manager.reset_balance()
         self.purchase_manager.reset_purchases()
         self.update()
