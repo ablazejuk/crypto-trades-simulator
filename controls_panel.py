@@ -1,6 +1,8 @@
-from tkinter import Entry, Frame, Label, ttk
+from tkinter import Entry, Frame, Label, Tk, ttk
+from typing import Callable
 from coin_manager import CoinManager
 import inject
+from main_window import MainWindow
 from purchase_manager import PurchaseManager
 from singleton_metaclass import SingletonMeta
 
@@ -10,7 +12,7 @@ class ControlsPanel(metaclass=SingletonMeta):
         self.purchase_manager = purchase_manager
         self.coin_manager = coin_manager
 
-    def create(self, root, update_callback) -> None:
+    def create(self, root: Tk, update_callback: Callable[[], None]) -> None:
         self.update_callback = update_callback
 
         controls_frame = Frame(root)
@@ -32,19 +34,20 @@ class ControlsPanel(metaclass=SingletonMeta):
         sell_button = ttk.Button(controls_frame, text="Sell", command=self.sell_selected_crypto)
         sell_button.grid(row=0, column=4, padx=5, pady=5, sticky="w" + "e")
 
-    def populate_combobox(self):
+    def populate_combobox(self) -> None:
         capitalized_cryptos = [crypto.capitalize() for crypto in self.coin_manager.get_available_coins()]
         self.crypto_combobox['values'] = capitalized_cryptos
+        
         if capitalized_cryptos:
             self.crypto_combobox.current(0)
 
-    def buy_selected_crypto(self):
+    def buy_selected_crypto(self) -> None:
         selected_crypto = self.crypto_combobox.get().lower()
         amount = float(self.amount_entry.get())
         self.purchase_manager.buy_crypto(selected_crypto, amount)
         self.update_callback()
 
-    def sell_selected_crypto(self):
+    def sell_selected_crypto(self) -> None:
         selected_crypto = self.crypto_combobox.get().lower()
         amount = float(self.amount_entry.get())
         self.purchase_manager.sell_crypto(selected_crypto, amount)

@@ -24,7 +24,7 @@ class PurchaseManager(metaclass=SingletonMeta):
         
         return purchases
 
-    def buy_crypto(self, crypto, amount):
+    def buy_crypto(self, crypto, amount) -> str:
         try:
             price = self.coin_manager.get_latest_prices()[crypto]['brl']
             quantity = round(amount / price, 8)
@@ -38,7 +38,7 @@ class PurchaseManager(metaclass=SingletonMeta):
         except ValueError:
             return "Invalid amount entered."
 
-    def sell_crypto(self, crypto, amount):
+    def sell_crypto(self, crypto, amount) -> str:
         try:
             price = self.coin_manager.get_latest_prices()[crypto]['brl']
             quantity = round(amount / price, 8)

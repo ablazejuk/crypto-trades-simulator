@@ -6,7 +6,7 @@ class CoinManager(metaclass=SingletonMeta):
         self.available_coins = ["bitcoin", "ethereum", "solana", "sundog"]
         self.latest_prices = {}
 
-    def get_available_coins(self):
+    def get_available_coins(self) -> list:
         return self.available_coins
     
     def get_latest_prices(self):
