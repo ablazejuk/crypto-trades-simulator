@@ -1,4 +1,5 @@
-from tkinter import Button, Frame, Label
+from tkinter import Button, Frame, Label, Tk
+from typing import Callable
 from balance_manager import BalanceManager
 import inject
 from singleton_metaclass import SingletonMeta
@@ -8,7 +9,7 @@ class BalancePanel(metaclass=SingletonMeta):
     def __init__(self, balance_manager: BalanceManager):
         self.balance_manager = balance_manager
         
-    def create(self, root, reset_callback) -> None:
+    def create(self, root: Tk, reset_callback: Callable[[], None]) -> None:
         balance_frame = Frame(root)
         balance_frame.pack(fill="x", padx=10, pady=(10, 0))
 

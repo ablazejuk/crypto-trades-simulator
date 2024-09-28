@@ -2,7 +2,6 @@ from tkinter import Entry, Frame, Label, Tk, ttk
 from typing import Callable
 from coin_manager import CoinManager
 import inject
-from main_window import MainWindow
 from purchase_manager import PurchaseManager
 from singleton_metaclass import SingletonMeta
 
