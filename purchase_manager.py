@@ -13,18 +13,17 @@ class PurchaseManager(metaclass=SingletonMeta):
         self.coin_manager = coin_manager
         self.data_manager = data_manager
         self.initial_purchases = {coin: 0.0 for coin in coin_manager.get_available_coins()}
-        self.latest_prices = {}
-        self.purchases = self.load_purchases()
+        self.purchases: dict[str, float] = self.load_purchases()
 
-    def load_purchases(self):
-        purchases = self.data_manager.get_value('purchases')
+    def load_purchases(self) -> dict[str, float]:
+        purchases: dict[str, float] = self.data_manager.get_value('purchases')
 
         if not purchases:
             return self.initial_purchases
         
         return purchases
 
-    def buy_crypto(self, crypto, amount) -> str:
+    def buy_crypto(self, crypto: str, amount: float) -> str:
         try:
             price = self.coin_manager.get_latest_prices()[crypto]['brl']
             quantity = round(amount / price, 8)
@@ -38,7 +37,7 @@ class PurchaseManager(metaclass=SingletonMeta):
         except ValueError:
             return "Invalid amount entered."
 
-    def sell_crypto(self, crypto, amount) -> str:
+    def sell_crypto(self, crypto: str, amount: float) -> str:
         try:
             price = self.coin_manager.get_latest_prices()[crypto]['brl']
             quantity = round(amount / price, 8)

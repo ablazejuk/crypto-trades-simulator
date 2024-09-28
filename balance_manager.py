@@ -18,10 +18,10 @@ class BalanceManager(metaclass=SingletonMeta):
         
         return balance
 
-    def add_funds(self, amount):
+    def add_funds(self, amount) -> None:
         self.balance += amount
 
-    def deduct_funds(self, amount):
+    def deduct_funds(self, amount) -> None:
         if amount <= self.balance:
             self.balance -= amount
         else:

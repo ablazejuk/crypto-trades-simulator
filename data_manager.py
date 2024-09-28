@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 from singleton_metaclass import SingletonMeta
 
 class DataManager(metaclass=SingletonMeta):
@@ -15,7 +16,7 @@ class DataManager(metaclass=SingletonMeta):
         with open(self.DATA_FILE, "r") as file:
             return json.load(file)
 
-    def get_value(self, key):
+    def get_value(self, key) -> Any:
         if self.data and key in self.data:
             return self.data[key]
         
