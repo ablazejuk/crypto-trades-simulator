@@ -1,4 +1,4 @@
-from tkinter import Frame, ttk
+from tkinter import Frame, Tk, ttk
 from coin_manager import CoinManager
 import inject
 from purchase_manager import PurchaseManager
@@ -9,7 +9,7 @@ class Table:
         self.coin_manager = coin_manager
         self.purchase_manager = purchase_manager
 
-    def create(self, root) -> ttk.Treeview:
+    def create(self, root: Tk) -> ttk.Treeview:
         table_frame = Frame(root)
         table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 

@@ -9,7 +9,7 @@ class CoinManager(metaclass=SingletonMeta):
     def get_available_coins(self) -> list:
         return self.available_coins
     
-    def get_latest_prices(self):
+    def get_latest_prices(self) -> dict:
         return self.latest_prices
     
     def fetch_crypto_prices(self) -> None:
