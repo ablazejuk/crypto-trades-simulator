@@ -10,18 +10,18 @@ class BalanceManager(metaclass=SingletonMeta):
         self.data_manager = data_manager
         self.balance = self.load_balance()
 
-    def load_balance(self):
-        balance = self.data_manager.get_value('balance')
+    def load_balance(self) -> float:
+        balance: float = self.data_manager.get_value('balance')
 
         if not balance:
             return self.INITIAL_BALANCE
         
         return balance
 
-    def add_funds(self, amount) -> None:
+    def add_funds(self, amount: float) -> None:
         self.balance += amount
 
-    def deduct_funds(self, amount) -> None:
+    def deduct_funds(self, amount: float) -> None:
         if amount <= self.balance:
             self.balance -= amount
         else:
