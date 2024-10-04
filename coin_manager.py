@@ -4,12 +4,12 @@ from singleton_metaclass import SingletonMeta
 class CoinManager(metaclass=SingletonMeta):
     def __init__(self) -> None:
         self.available_coins = ["bitcoin", "ethereum", "solana", "sundog"]
-        self.latest_prices = {}
+        self.latest_prices: dict[str, dict[str, int | float]] = {}
 
-    def get_available_coins(self) -> list:
+    def get_available_coins(self) -> list[str]:
         return self.available_coins
     
-    def get_latest_prices(self) -> dict:
+    def get_latest_prices(self) -> dict[str, dict[str, int | float]]:
         return self.latest_prices
     
     def fetch_crypto_prices(self) -> None:
