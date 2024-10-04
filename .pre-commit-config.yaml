@@ -4,3 +4,5 @@ repos:
     hooks:
       - id: mypy
         stages: [push]
+        additional_dependencies:
+          - types-requests
