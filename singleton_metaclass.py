@@ -1,7 +1,9 @@
-class SingletonMeta(type):
-    _instances = {}
+from typing import Any
 
-    def __call__(cls, *args, **kwargs):
+class SingletonMeta(type):
+    _instances: dict[type, object] = {}
+
+    def __call__(cls, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> object:
         if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
+            cls._instances[cls] = super(SingletonMeta, cls).__call__(*args, **kwargs)
         return cls._instances[cls]

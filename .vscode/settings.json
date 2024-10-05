@@ -1,0 +1,4 @@
+{
+    "python.terminal.activateEnvironment": true,
+    "python.pythonPath": "${workspaceFolder}/venv/Scripts/python"  // Adjust this path to point to your venv if different
+}
