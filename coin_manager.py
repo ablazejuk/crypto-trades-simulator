@@ -3,7 +3,7 @@ from singleton_metaclass import SingletonMeta
 
 class CoinManager(metaclass=SingletonMeta):
     def __init__(self) -> None:
-        self.available_coins = ["bitcoin", "ethereum", "solana", "sundog"]
+        self.available_coins = ["bitcoin", "ethereum", "maga", "solana", "sundog"]
         self.latest_prices: dict[str, dict[str, int | float]] = {}
 
     def get_available_coins(self) -> list[str]:
